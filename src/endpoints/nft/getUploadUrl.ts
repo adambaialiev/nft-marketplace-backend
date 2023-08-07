@@ -1,7 +1,7 @@
 import { APIGatewayProxyHandler } from "aws-lambda";
 import { sendResponse } from "@/utils/makeResponse";
 import { S3 } from "aws-sdk";
-const KSUID = require("ksuid");
+import KSUID from "ksuid";
 
 export interface GetUploadUrlParams {
   extension: string;

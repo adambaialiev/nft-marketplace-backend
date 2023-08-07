@@ -2,13 +2,12 @@ import { APIGatewayProxyHandler } from "aws-lambda";
 import { sendResponse } from "@/utils/makeResponse";
 import AWS from "aws-sdk";
 import { Entities, TableKeys } from "@/common/dynamo/schema";
-const KSUID = require("ksuid");
 
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
 const TableName = process.env.dynamo_table as string;
 
-export const main: APIGatewayProxyHandler = async (event) => {
+export const main: APIGatewayProxyHandler = async () => {
   try {
     const queryOutput = await dynamo
       .query({

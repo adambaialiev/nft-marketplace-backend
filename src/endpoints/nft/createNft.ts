@@ -3,7 +3,7 @@ import { sendResponse } from "@/utils/makeResponse";
 import AWS from "aws-sdk";
 import { Entities, NFTAttributes, TableKeys } from "@/common/dynamo/schema";
 import { buildNftKey } from "@/common/dynamo/buildKey";
-const KSUID = require("ksuid");
+import KSUID from "ksuid";
 
 const dynamo = new AWS.DynamoDB.DocumentClient();
 
