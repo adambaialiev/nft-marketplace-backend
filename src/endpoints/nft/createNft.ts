@@ -11,7 +11,7 @@ const TableName = process.env.dynamo_table as string;
 
 export const main: APIGatewayProxyHandler = async (event) => {
   try {
-    const { name, tag } = JSON.parse(event.body);
+    const { name, tag, fileKey } = JSON.parse(event.body);
 
     const id = KSUID.randomSync().string;
     const Item = {
@@ -20,6 +20,7 @@ export const main: APIGatewayProxyHandler = async (event) => {
       [NFTAttributes.ID]: id,
       [NFTAttributes.NAME]: name,
       [NFTAttributes.TAG]: tag,
+      [NFTAttributes.FILE_KEY]: fileKey,
       [NFTAttributes.CREATED_AT]: Date.now().toString(),
     };
 

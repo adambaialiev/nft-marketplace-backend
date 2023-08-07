@@ -13,6 +13,7 @@ export enum NFTAttributes {
   ID = "id",
   NAME = "name",
   TAG = "tag",
+  FILE_KEY = "fileKey",
   CREATED_AT = "createdAt",
 }
 
