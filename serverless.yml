@@ -1,0 +1,111 @@
+org: shopwallet
+app: nft-marketplace-backend
+service: nft-marketplace-backend
+
+frameworkVersion: "3"
+
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  profile: ${opt:stage, "dev"}
+  versionFunctions: false
+  environment:
+    stage: ${opt:stage}
+    dynamo_table:
+      Ref: NFTMarketplaceTable
+    bucket:
+      Ref: NFTMarketplaceBucket
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:Scan
+        - dynamodb:BatchGetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:RemoveItem
+        - dynamodb:DeleteItem
+      Resource: "*"
+
+plugins:
+  - serverless-offline
+  - serverless-domain-manager
+  - serverless-prune-plugin
+
+custom:
+  prune:
+    automatic: true
+    number: 5
+
+functions:
+  get-upload-url:
+    handler: build/src/endpoints/nft/getUploadUrl.main
+    role: FunctionsRole
+    events:
+      - http:
+          path: /nft/upload-url
+          method: POST
+          cors: true
+  create-nft:
+    handler: build/src/endpoints/nft/createNft.main
+    role: FunctionsRole
+    events:
+      - http:
+          path: /nft
+          method: POST
+          cors: true
+
+resources:
+  Resources:
+    NFTMarketplaceTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: NFTMarketplaceTable-${self:provider.profile}
+        AttributeDefinitions:
+          - AttributeName: PK
+            AttributeType: S
+          - AttributeName: SK
+            AttributeType: S
+          - AttributeName: GSI1PK
+            AttributeType: S
+          - AttributeName: GSI1SK
+            AttributeType: S
+        KeySchema:
+          - AttributeName: PK
+            KeyType: HASH
+          - AttributeName: SK
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: GSI1
+            KeySchema:
+              - AttributeName: GSI1PK
+                KeyType: HASH
+              - AttributeName: GSI1SK
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
+    NFTMarketplaceBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: NFTMarketplaceBucket-${self:provider.profile}
+        AccessControl: PublicRead
+        CorsConfiguration:
+          CorsRules:
+            - AllowedOrigins:
+                - "*"
+              AllowedHeaders:
+                - "*"
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              MaxAge: 3000
