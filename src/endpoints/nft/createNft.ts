@@ -9,6 +9,11 @@ const dynamo = new AWS.DynamoDB.DocumentClient();
 
 const TableName = process.env.dynamo_table as string;
 
+const BucketName = process.env.bucket as string;
+
+export const buildFileUrl = (key: string) =>
+  `https://${BucketName}.s3.amazonaws.com/${key}`;
+
 export const main: APIGatewayProxyHandler = async (event) => {
   try {
     const { name, tag, fileKey } = JSON.parse(event.body);
@@ -20,7 +25,7 @@ export const main: APIGatewayProxyHandler = async (event) => {
       [NFTAttributes.ID]: id,
       [NFTAttributes.NAME]: name,
       [NFTAttributes.TAG]: tag,
-      [NFTAttributes.FILE_KEY]: fileKey,
+      [NFTAttributes.FILE_URL]: buildFileUrl(fileKey),
       [NFTAttributes.CREATED_AT]: Date.now().toString(),
     };
 
