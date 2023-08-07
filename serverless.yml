@@ -56,6 +56,13 @@ functions:
           path: /nft
           method: POST
           cors: true
+  get-nft-collection:
+    handler: build/src/endpoints/nft/getNftCollection.main
+    events:
+      - http:
+          path: /nft
+          method: GET
+          cors: true
 
 resources:
   Resources:
