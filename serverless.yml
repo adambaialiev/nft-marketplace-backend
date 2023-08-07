@@ -13,7 +13,7 @@ provider:
   profile: ${opt:stage, "dev"}
   versionFunctions: false
   environment:
-    stage: ${opt:stage}
+    # stage: ${opt:stage}
     dynamo_table:
       Ref: NFTMarketplaceTable
     bucket:
@@ -31,11 +31,10 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:RemoveItem
         - dynamodb:DeleteItem
+        - s3:*
       Resource: "*"
 
 plugins:
-  - serverless-offline
-  - serverless-domain-manager
   - serverless-prune-plugin
 
 custom:
@@ -46,7 +45,6 @@ custom:
 functions:
   get-upload-url:
     handler: build/src/endpoints/nft/getUploadUrl.main
-    role: FunctionsRole
     events:
       - http:
           path: /nft/upload-url
@@ -54,7 +52,6 @@ functions:
           cors: true
   create-nft:
     handler: build/src/endpoints/nft/createNft.main
-    role: FunctionsRole
     events:
       - http:
           path: /nft
@@ -94,8 +91,12 @@ resources:
     NFTMarketplaceBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: NFTMarketplaceBucket-${self:provider.profile}
-        AccessControl: PublicRead
+        BucketName: nft-marketplace-bucket-${self:provider.profile}
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+        OwnershipControls:
+          Rules:
+            - ObjectOwnership: ObjectWriter
         CorsConfiguration:
           CorsRules:
             - AllowedOrigins:
