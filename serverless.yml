@@ -13,7 +13,6 @@ provider:
   profile: ${opt:stage, "dev"}
   versionFunctions: false
   environment:
-    # stage: ${opt:stage}
     dynamo_table:
       Ref: NFTMarketplaceTable
     bucket:
